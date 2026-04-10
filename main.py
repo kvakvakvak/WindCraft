@@ -7,7 +7,7 @@ import db
 import texts
 
 
-TOKEN = "vk1.a.WV3aK4FNc65zn74TChUFNzYZJB61uXuI5n_ZRvEQz_FiRe08oxtnGjbpfo_D1efNZdg4Y8M_zAaM9ZBUrCd9lxy06cRLXfeNt7FnhVKCl5JRlkMrDfO3P4cq53ofnEUcqkGdf42vMcwWhqLjm3xSYzyxsNlm9pIaw6qcNnW9Dw5amSKclBua-wM45je-7t4o2h0PcME0Bkk09xVMw_NKPQ"
+TOKEN = "vk1.a.OWDpZc8h5iC-KT-tpzrMf28yZWNChtvelCOVWEr-oN8Bg8LtfROhG_o51WEeXFdKcrJWCo4ZTWtYx7z1HFFzBc4s74XQtYY5xlexzKJsB1PthSu2b5oBydVICZmauSCKPhFN1kYi9d2NwWordeIGuzGUPLhggiucUO_LNkxU0-Ggef-L4Zv9JBz7CCAdfqqW6UuJAu8yeB_-XsqeawmHvw"
 
 
 DENS_CONFIG = [
