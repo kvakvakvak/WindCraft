@@ -4,7 +4,9 @@ from vkbottle import Keyboard, Text, KeyboardButtonColor
 import db
 import texts
 
+
 TOKEN = "vk1.a.WV3aK4FNc65zn74TChUFNzYZJB61uXuI5n_ZRvEQz_FiRe08oxtnGjbpfo_D1efNZdg4Y8M_zAaM9ZBUrCd9lxy06cRLXfeNt7FnhVKCl5JRlkMrDfO3P4cq53ofnEUcqkGdf42vMcwWhqLjm3xSYzyxsNlm9pIaw6qcNnW9Dw5amSKclBua-wM45je-7t4o2h0PcME0Bkk09xVMw_NKPQ"
+
 
 DENS_CONFIG = [
     {"key": "leader", "name": "Палатка предводителя", "structure": "underground", "preset": 92},
@@ -14,6 +16,7 @@ DENS_CONFIG = [
     {"key": "nursery", "name": "Детская", "structure": "underground", "preset": 76},
     {"key": "elders", "name": "Палатка старейшин", "structure": "branches", "preset": 75},
 ]
+
 
 db.init_db(DENS_CONFIG)
 bot = Bot(token=TOKEN)
@@ -48,10 +51,10 @@ def bedding_keyboard():
         .add(Text("Скрафтить подстилку"), color=KeyboardButtonColor.POSITIVE)
         .add(Text("Скрафтить гнездо"), color=KeyboardButtonColor.POSITIVE)
         .row()
-        .add(Text("Вытряхнуть подстилку"), color=KeyboardButtonColor.PRIMARY)
-        .add(Text("Уничтожить подстилку"), color=KeyboardButtonColor.NEGATIVE)
+        .add(Text("Вытряхнуть"), color=KeyboardButtonColor.PRIMARY)
+        .add(Text("Уничтожить"), color=KeyboardButtonColor.NEGATIVE)
         .row()
-        .add(Text("Проверить все подстилки"), color=KeyboardButtonColor.PRIMARY)
+        .add(Text("Проверить все"), color=KeyboardButtonColor.PRIMARY)
         .add(Text("Блохи"), color=KeyboardButtonColor.NEGATIVE)
         .row()
         .add(Text("Назад"), color=KeyboardButtonColor.SECONDARY)
@@ -65,7 +68,6 @@ def walls_keyboard():
         .add(Text("Скрафтить стены"), color=KeyboardButtonColor.POSITIVE)
         .add(Text("Укрепить стены"), color=KeyboardButtonColor.PRIMARY)
         .row()
-        .add(Text("Снести стены"), color=KeyboardButtonColor.NEGATIVE)
         .add(Text("Оценить стены"), color=KeyboardButtonColor.SECONDARY)
         .row()
         .add(Text("Назад"), color=KeyboardButtonColor.SECONDARY)
@@ -89,8 +91,6 @@ def den_action_keyboard(den_name):
     return (
         Keyboard(one_time=True)
         .add(Text(f"Починить: {den_name}"), color=KeyboardButtonColor.POSITIVE)
-        .add(Text(f"Снести: {den_name}"), color=KeyboardButtonColor.NEGATIVE)
-        .row()
         .add(Text(f"Скрафтить: {den_name}"), color=KeyboardButtonColor.PRIMARY)
         .row()
         .add(Text("Назад"), color=KeyboardButtonColor.SECONDARY)
@@ -134,7 +134,7 @@ async def universal_handler(message: Message):
 
     if text == "Скрафтить подстилку":
         WAITING_BEDDING_OWNER[uid] = True
-        await message.answer("Подстилка готова. Кому она принадлежит? Напиши имя персонажа.")
+        await message.answer("Подстилка готова. Кому она принадлежит? (Имя персонажа в именительном падеже).")
         return
 
     if text == "Скрафтить гнездо":
@@ -142,7 +142,7 @@ async def universal_handler(message: Message):
         await message.answer(f"Гнездо #{nest_id} сплетено. Состояние: 100%.", keyboard=bedding_keyboard())
         return
 
-    if text == "Вытряхнуть подстилку":
+    if text == "Вытряхнуть":
         beddings = db.get_all_beddings()
         if not beddings:
             await message.answer("Нет ни одной подстилки или гнезда.", keyboard=bedding_keyboard())
@@ -155,7 +155,7 @@ async def universal_handler(message: Message):
         await message.answer("\n".join(lines))
         return
 
-    if text == "Уничтожить подстилку":
+    if text == "Уничтожить":
         beddings = db.get_all_beddings()
         if not beddings:
             await message.answer("Нет ни одной подстилки или гнезда.", keyboard=bedding_keyboard())
@@ -168,7 +168,7 @@ async def universal_handler(message: Message):
         await message.answer("\n".join(lines))
         return
 
-    if text == "Проверить все подстилки":
+    if text == "Проверить все":
         beddings = db.get_all_beddings()
         if not beddings:
             await message.answer("Подстилок и гнёзд нет.", keyboard=bedding_keyboard())
@@ -209,7 +209,7 @@ async def universal_handler(message: Message):
             return
         lines = ["Выбери подстилку. Напиши её номер из списка.\n"]
         for i, b in enumerate(beddings, 1):
-            lines.append(f"{i}. Подстилка {b['owner']}")
+            lines.append(f"{i}. Подстилка. Владелец — {b['owner']}")
         WAITING_RENAME_OWNER[uid] = {"step": "pick", "ids": [b["id"] for b in beddings]}
         await message.answer("\n".join(lines))
         return
@@ -226,20 +226,20 @@ async def universal_handler(message: Message):
         await message.answer(f"Стены укреплены на {bonus}%. Текущее состояние: {new_val}%.", keyboard=walls_keyboard())
         return
 
-    if text == "Снести стены":
-        db.set_walls_condition(0)
-        await message.answer("Стены снесены. Состояние: 0%.", keyboard=walls_keyboard())
-        return
-
     if text == "Оценить стены":
         cond = db.get_walls_condition()
         await message.answer(f"Лагерные стены: {texts.walls_desc(cond)}", keyboard=walls_keyboard())
         return
 
+    if lowered == "снести стены":
+        db.set_walls_condition(0)
+        await message.answer("Стены снесены. Состояние: 0%.", keyboard=walls_keyboard())
+        return
+
     if uid in WAITING_BEDDING_OWNER:
         WAITING_BEDDING_OWNER.pop(uid, None)
         db.add_bedding(text)
-        await message.answer(f"Подстилка закреплена за {text}. Состояние: 100%.", keyboard=bedding_keyboard())
+        await message.answer(f"Владелец подстилки — {text}. Состояние: 100%.", keyboard=bedding_keyboard())
         return
 
     if uid in WAITING_SHAKE:
@@ -302,6 +302,67 @@ async def universal_handler(message: Message):
                 await message.answer("Не удалось изменить владельца.", keyboard=bedding_keyboard())
             return
 
+    if lowered.startswith("понизить значение подстилок на "):
+        try:
+            amount = int(lowered.replace("понизить значение подстилок на ", "").strip())
+            if amount < 0:
+                await message.answer("Число должно быть положительным.", keyboard=bedding_keyboard())
+                return
+
+            beddings = db.get_all_beddings()
+            if not beddings:
+                await message.answer("Подстилок и гнёзд нет.", keyboard=bedding_keyboard())
+                return
+
+            db.lower_all_beddings(amount)
+            await message.answer(
+                f"Значение всех подстилок и гнёзд понижено на {amount}%.",
+                keyboard=bedding_keyboard()
+            )
+            return
+        except ValueError:
+            await message.answer("После команды нужно указать число.", keyboard=bedding_keyboard())
+            return
+
+    if lowered.startswith("понизить значение стен на "):
+        try:
+            amount = int(lowered.replace("понизить значение стен на ", "").strip())
+            if amount < 0:
+                await message.answer("Число должно быть положительным.", keyboard=walls_keyboard())
+                return
+
+            new_value = db.lower_walls(amount)
+            await message.answer(
+                f"Значение стен понижено на {amount}%. Теперь состояние стен: {new_value}%.",
+                keyboard=walls_keyboard()
+            )
+            return
+        except ValueError:
+            await message.answer("После команды нужно указать число.", keyboard=walls_keyboard())
+            return
+
+    if lowered.startswith("понизить значение палаток на "):
+        try:
+            amount = int(lowered.replace("понизить значение палаток на ", "").strip())
+            if amount < 0:
+                await message.answer("Число должно быть положительным.", keyboard=dens_keyboard())
+                return
+
+            dens_list = db.get_all_dens()
+            if not dens_list:
+                await message.answer("Палаток нет.", keyboard=dens_keyboard())
+                return
+
+            db.lower_all_dens(amount)
+            await message.answer(
+                f"Значение всех палаток понижено на {amount}%.",
+                keyboard=dens_keyboard()
+            )
+            return
+        except ValueError:
+            await message.answer("После команды нужно указать число.", keyboard=dens_keyboard())
+            return
+
     dens = db.get_all_dens()
     den_by_name = {d["name"]: d for d in dens}
 
@@ -318,14 +379,14 @@ async def universal_handler(message: Message):
             await message.answer(f"{den['name']} отремонтирована. Состояние: {new_val}%.", keyboard=dens_keyboard())
             return
 
-        if text == f"Снести: {den['name']}":
-            db.set_den_condition(den["key"], 0)
-            await message.answer(f"{den['name']} снесена. Состояние: 0%.", keyboard=dens_keyboard())
-            return
-
         if text == f"Скрафтить: {den['name']}":
             db.set_den_condition(den["key"], 100)
             await message.answer(f"{den['name']} возведена заново. Состояние: 100%.", keyboard=dens_keyboard())
+            return
+
+        if lowered == f"снести: {den['name'].lower()}":
+            db.set_den_condition(den["key"], 0)
+            await message.answer(f"{den['name']} снесена. Состояние: 0%.", keyboard=dens_keyboard())
             return
 
     await message.answer("Неизвестная команда. Используй кнопки меню.", keyboard=main_keyboard())
