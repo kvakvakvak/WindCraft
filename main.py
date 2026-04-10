@@ -91,7 +91,6 @@ def bedding_keyboard():
 def walls_keyboard():
     return (
         Keyboard(one_time=False)
-        .add(Text("Скрафтить стены"), color=KeyboardButtonColor.POSITIVE)
         .add(Text("Укрепить стены"), color=KeyboardButtonColor.PRIMARY)
         .row()
         .add(Text("Оценить стены"), color=KeyboardButtonColor.SECONDARY)
@@ -117,8 +116,6 @@ def den_action_keyboard(den_name):
     return (
         Keyboard(one_time=True)
         .add(Text(f"Починить: {den_name}"), color=KeyboardButtonColor.POSITIVE)
-        .add(Text(f"Скрафтить: {den_name}"), color=KeyboardButtonColor.PRIMARY)
-        .row()
         .add(Text("Назад"), color=KeyboardButtonColor.SECONDARY)
         .get_json()
     )
@@ -240,7 +237,7 @@ async def universal_handler(message: Message):
         await message.answer("\n".join(lines))
         return
 
-    if text == "Скрафтить стены":
+    if lowered == "скрафтить стены":
         db.set_walls_condition(25)
         await message.answer("Стены возведены с нуля. Состояние: 25%.", keyboard=walls_keyboard())
         return
@@ -435,7 +432,7 @@ async def universal_handler(message: Message):
             await message.answer(f"{den['name']} отремонтирована. Состояние: {new_val}%.", keyboard=dens_keyboard())
             return
 
-        if text == f"Скрафтить: {den['name']}":
+        if lowered == f"скрафтить: {den['name'].lower()}":
             db.set_den_condition(den["key"], 100)
             await message.answer(f"{den['name']} возведена заново. Состояние: 100%.", keyboard=dens_keyboard())
             return
