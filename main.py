@@ -12,6 +12,7 @@ DENS_CONFIG = [{"key":"leader","name":"Палатка предводителя",
 
 db.init_db(DENS_CONFIG)
 bot = Bot(token=TOKEN)
+BOOT_MESSAGE = "Племя Ветра. Выбери раздел."
 
 WAITING_BEDDING_OWNER = {}
 WAITING_BEDDING_DELETE = {}
@@ -110,9 +111,16 @@ def den_action_keyboard(den_name):
     )
 
 
+@bot.on.message()
+async def bootstrap_text_handler(message: Message):
+    text = (message.text or "").strip().lower()
+    if text in {"начало", "меню"}:
+        await message.answer(BOOT_MESSAGE, keyboard=main_keyboard())
+
+
 @bot.on.message(text=["Начало", "начало", "Меню", "меню"])
 async def start_handler(message: Message):
-    await message.answer("Племя Ветра. Выбери раздел.", keyboard=main_keyboard())
+    await message.answer(BOOT_MESSAGE, keyboard=main_keyboard())
 
 
 @bot.on.message(text="Подстилки")
@@ -354,4 +362,8 @@ async def universal_handler(message: Message):
 
 if __name__ == "__main__":
     bot.loop_wrapper.add_task(wear_scheduler())
+<<<<<<< HEAD
     bot.run_forever()
+=======
+    bot.run_polling()
+>>>>>>> b73369a (обновить бота wind)
