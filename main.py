@@ -352,12 +352,6 @@ async def universal_handler(message: Message):
     await message.answer("Неизвестная команда. Используй кнопки меню.", keyboard=main_keyboard())
 
 
-async def main():
-    await asyncio.gather(
-        bot.run_polling(),
-        wear_scheduler(),
-    )
-
-
 if __name__ == "__main__":
-    asyncio.run(main())
+    bot.loop_wrapper.add_task(wear_scheduler())
+    bot.run_forever()
