@@ -251,7 +251,7 @@ async def universal_handler(message: Message):
 
     if text == "Оценить стены":
         cond = db.get_walls_condition()
-        await message.answer(f"Лагерные стены: {texts.walls_desc(cond)}", keyboard=walls_keyboard())
+        await message.answer(f"{texts.walls_desc(cond)}", keyboard=walls_keyboard())
         return
 
     if lowered == "снести стены":
