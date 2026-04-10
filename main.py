@@ -198,7 +198,7 @@ async def universal_handler(message: Message):
         if not bad:
             await message.answer("Всё в порядке.", keyboard=bedding_keyboard())
             return
-        lines = ["Требуют замены:\n"] + [f"{bedding_label(b)} — состояние критическое" for b in bad]
+        lines = ["Требуют замены:\n"] + [f"{bedding_label(b)}" for b in bad]
         await message.answer("\n".join(lines), keyboard=bedding_keyboard())
         return
 
