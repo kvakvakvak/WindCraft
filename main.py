@@ -363,15 +363,13 @@ async def universal_handler(message: Message):
             await message.answer("После команды нужно указать число.", keyboard=dens_keyboard())
             return
 
-        if lowered in {"показать все значения", "показать все проценты"}:
+    if lowered in {"показать все значения", "показать все проценты"}:
         lines = ["Все текущие значения:\n"]
 
-        # Стены
         walls = db.get_walls_condition()
         lines.append(f"Стены — {walls}%")
         lines.append("")
 
-        # Палатки
         lines.append("Палатки:")
         dens_list = db.get_all_dens()
         if dens_list:
@@ -381,7 +379,6 @@ async def universal_handler(message: Message):
             lines.append("- Палаток нет")
         lines.append("")
 
-        # Подстилки и гнёзда
         lines.append("Подстилки и гнёзда:")
         beddings = db.get_all_beddings()
         if beddings:
