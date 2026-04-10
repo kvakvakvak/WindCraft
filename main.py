@@ -1,4 +1,6 @@
 import random
+import asyncio
+import datetime
 from vkbottle.bot import Bot, Message
 from vkbottle import Keyboard, Text, KeyboardButtonColor
 import db
@@ -16,6 +18,30 @@ DENS_CONFIG = [
     {"key": "nursery", "name": "Детская", "structure": "underground", "preset": 76},
     {"key": "elders", "name": "Палатка старейшин", "structure": "branches", "preset": 75},
 ]
+
+DECAY_DAYS = {1, 4, 5, 6}  # вт=1, пт=4, сб=5, вс=6 (понедельник=0)
+
+
+async def wear_scheduler():
+    while True:
+        now = datetime.datetime.now()
+        weekday = now.weekday()
+
+        if weekday in DECAY_DAYS:
+            # подстилки и гнёзда: минус 2–5
+            bed_decay = random.randint(2, 5)
+            db.lower_all_beddings(bed_decay)
+
+            # стены: минус 2–4
+            wall_decay = random.randint(2, 4)
+            db.lower_walls(wall_decay)
+
+            # палатки: минус 2–4
+            dens_decay = random.randint(2, 4)
+            db.lower_all_dens(dens_decay)
+
+        # ждать до следующего дня (24 часа)
+        await asyncio.sleep(24 * 60 * 60)
 
 
 db.init_db(DENS_CONFIG)
@@ -423,4 +449,5 @@ async def universal_handler(message: Message):
 
 
 if __name__ == "__main__":
+    bot.loop_wrapper.add_task(wear_scheduler())
     bot.run_forever()
