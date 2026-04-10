@@ -361,5 +361,5 @@ async def universal_handler(message: Message):
 
 
 if __name__ == "__main__":
-    bot.loop_wrapper.add_task(wear_scheduler())
-    bot.run_polling()
+    bot.loop_wrapper.add_task(wear_scheduler)
+    bot.run_forever()
