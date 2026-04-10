@@ -186,3 +186,37 @@ def wear_all_beddings(decay):
     c.execute("UPDATE beddings SET condition = MAX(0, condition - ?)", (decay,))
     conn.commit()
     conn.close()
+
+    
+def set_bedding_condition(bedding_id, value):
+    value = max(0, min(100, value))
+    conn = get_conn()
+    c = conn.cursor()
+    c.execute("UPDATE beddings SET condition=? WHERE id=?", (value, bedding_id))
+    conn.commit()
+    conn.close()
+    return value
+
+
+def lower_all_beddings(amount):
+    amount = max(0, amount)
+    conn = get_conn()
+    c = conn.cursor()
+    c.execute("UPDATE beddings SET condition = MAX(0, condition - ?)", (amount,))
+    conn.commit()
+    conn.close()
+
+
+def lower_walls(amount):
+    amount = max(0, amount)
+    current = get_walls_condition()
+    return set_walls_condition(current - amount)
+
+
+def lower_all_dens(amount):
+    amount = max(0, amount)
+    conn = get_conn()
+    c = conn.cursor()
+    c.execute("UPDATE dens SET condition = MAX(0, condition - ?)", (amount,))
+    conn.commit()
+    conn.close()
