@@ -362,8 +362,4 @@ async def universal_handler(message: Message):
 
 if __name__ == "__main__":
     bot.loop_wrapper.add_task(wear_scheduler())
-<<<<<<< HEAD
-    bot.run_forever()
-=======
     bot.run_polling()
->>>>>>> b73369a (обновить бота wind)
