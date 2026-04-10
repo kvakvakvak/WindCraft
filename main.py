@@ -20,7 +20,7 @@ DENS_CONFIG = [
 
 db.init_db(DENS_CONFIG)
 bot = Bot(token=TOKEN)
-BOOT_MESSAGE = "Племя Ветра. Выбери раздел."
+BOOT_MESSAGE = "Выберите раздел."
 
 WAITING_BEDDING_OWNER = {}
 WAITING_BEDDING_DELETE = {}
@@ -108,7 +108,7 @@ async def universal_handler(message: Message):
 
     lowered = text.lower()
 
-    if lowered in {"начало", "меню"}:
+    if lowered in {"меню крафта", "меню"}:
         await message.answer(BOOT_MESSAGE, keyboard=main_keyboard())
         return
 
@@ -121,7 +121,7 @@ async def universal_handler(message: Message):
         return
 
     if text == "Палатки":
-        await message.answer("Палатки Племени Ветра. Выбери палатку.", keyboard=dens_keyboard())
+        await message.answer("Палатки Племени Ветра. Выберите палатку.", keyboard=dens_keyboard())
         return
 
     if text == "Назад":
@@ -147,7 +147,7 @@ async def universal_handler(message: Message):
         if not beddings:
             await message.answer("Нет ни одной подстилки или гнезда.", keyboard=bedding_keyboard())
             return
-        lines = ["Какую подстилку вытряхнуть? Напиши номер из списка.\n"]
+        lines = ["Какую подстилку вытряхнуть? Напишите номер из списка.\n"]
         for i, b in enumerate(beddings, 1):
             desc = texts.nest_desc(b["condition"]) if b["is_nest"] else texts.bedding_desc_tribe(b["condition"])
             lines.append(f"{i}. {bedding_label(b)} — {desc}")
@@ -160,7 +160,7 @@ async def universal_handler(message: Message):
         if not beddings:
             await message.answer("Нет ни одной подстилки или гнезда.", keyboard=bedding_keyboard())
             return
-        lines = ["Выбери, что уничтожить. Напиши номер из списка.\n"]
+        lines = ["Выбери, что уничтожить. Напишите номер из списка.\n"]
         for i, b in enumerate(beddings, 1):
             desc = texts.nest_desc(b["condition"]) if b["is_nest"] else texts.bedding_desc_tribe(b["condition"])
             lines.append(f"{i}. {bedding_label(b)} — {desc}")
@@ -271,7 +271,7 @@ async def universal_handler(message: Message):
                     else:
                         msg = "Подстилка уничтожена."
                         if result["condition"] <= 70 and random.random() < 0.5:
-                            msg += " При разборе нашлось немного мха (+1 мох)."
+                            msg += " При разборе нашлось немного пригодного мха (х1 мох)."
                         await message.answer(msg, keyboard=bedding_keyboard())
                     return
         await message.answer("Неверный номер. Действие отменено.", keyboard=bedding_keyboard())
@@ -286,7 +286,7 @@ async def universal_handler(message: Message):
                     state["step"] = "name"
                     state["target_id"] = state["ids"][idx]
                     b = db.get_bedding_by_id(state["target_id"])
-                    await message.answer(f"Напиши новое имя владельца подстилки {b['owner']}.")
+                    await message.answer(f"Напишите новое имя владельца подстилки {b['owner']}.")
                     return
             WAITING_RENAME_OWNER.pop(uid, None)
             await message.answer("Неверный номер. Действие отменено.", keyboard=bedding_keyboard())
